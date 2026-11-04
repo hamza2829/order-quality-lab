@@ -1,0 +1,61 @@
+name: Publish CI evidence
+on:
+  workflow_dispatch:
+    inputs:
+      unit_run:
+        description: Successful build and unit run ID
+        required: true
+      integration_run:
+        description: Successful integration and contract run ID
+        required: true
+      e2e_run:
+        description: Successful end to end run ID
+        required: true
+      performance_run:
+        description: Successful performance run ID
+        required: true
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      UNIT_RUN: ${{ inputs.unit_run }}
+      INTEGRATION_RUN: ${{ inputs.integration_run }}
+      E2E_RUN: ${{ inputs.e2e_run }}
+      PERFORMANCE_RUN: ${{ inputs.performance_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify runs and download artifacts
+        run: |
+          for run in "$UNIT_RUN" "$INTEGRATION_RUN" "$E2E_RUN" "$PERFORMANCE_RUN"; do
+            gh run view "$run" --json conclusion,status,headSha > "${RUNNER_TEMP}/order-quality-${run}.json"
+            python3 - "${RUNNER_TEMP}/order-quality-${run}.json" <<'PY'
+          import json, os, sys
+          run = json.load(open(sys.argv[1]))
+          assert run['status'] == 'completed' and run['conclusion'] == 'success', run
+          assert run['headSha'] == os.environ['GITHUB_SHA'], 'Runs must match the code being published'
+          PY
+          done
+          gh run download "$UNIT_RUN" --name unit-and-coverage --dir /tmp/order-evidence/unit
+          gh run download "$INTEGRATION_RUN" --name integration-and-contracts --dir /tmp/order-evidence/integration
+          gh run download "$E2E_RUN" --name end-to-end --dir /tmp/order-evidence/e2e
+          gh run download "$PERFORMANCE_RUN" --name performance-reports --dir /tmp/order-evidence/performance
+      - name: Write measured documentation
+        run: python3 scripts/publish_evidence.py /tmp/order-evidence
+      - name: Commit evidence
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md docs/
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'Document verified CI counts and measured performance'
+            git push origin HEAD:main
+          fi
