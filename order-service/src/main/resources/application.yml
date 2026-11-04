@@ -1,0 +1,20 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:h2:mem:orders;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ''
+  sql:
+    init:
+      mode: always
+inventory:
+  base-url: ${INVENTORY_URL:http://localhost:8081}
+  connect-timeout-ms: 300
+  request-timeout-ms: 800
+  retry-delay-ms: 50
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

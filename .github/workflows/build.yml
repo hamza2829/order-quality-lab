@@ -1,0 +1,33 @@
+name: Build and unit tests
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', 'README.md']
+  pull_request:
+    paths-ignore: ['docs/**', 'README.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - run: mvn -B -ntp verify -DskipITs=true
+      - name: Count tests and check package coverage
+        if: always()
+        run: python3 scripts/test_evidence.py unit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-and-coverage
+          path: |
+            **/target/surefire-reports/
+            **/target/site/jacoco/
+            reports/unit.json

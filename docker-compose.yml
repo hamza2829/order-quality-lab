@@ -1,0 +1,32 @@
+services:
+  inventory-service:
+    build:
+      context: .
+      dockerfile: inventory-service/Dockerfile
+    ports: ["8081:8081"]
+    mem_limit: 512m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8081/actuator/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 40
+      start_period: 15s
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    ports: ["8080:8080"]
+    mem_limit: 512m
+    cpus: 1.0
+    environment:
+      INVENTORY_URL: http://inventory-service:8081
+    depends_on:
+      inventory-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 40
+      start_period: 15s

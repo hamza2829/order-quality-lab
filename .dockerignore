@@ -1,0 +1,6 @@
+.git
+**/target
+reports
+e2e-tests
+docs
+.github
