@@ -19,7 +19,7 @@ public class JdbcOrderRepository implements OrderRepository {
                     line.quantity().value(), line.unitPrice().amount(), line.unitPrice().currency());
         }
     }
-    @Override public Optional<Order> find(UUID id) {
+    @Override @Transactional(readOnly = true) public Optional<Order> find(UUID id) {
         return jdbc.query("SELECT status, reason FROM orders WHERE id = ?", (rs, row) ->
                 Order.restore(id, jdbc.query("SELECT * FROM order_lines WHERE order_id = ? ORDER BY position",
                         (line, index) -> new OrderLine(new Sku(line.getString("sku")), new Quantity(line.getInt("quantity")),

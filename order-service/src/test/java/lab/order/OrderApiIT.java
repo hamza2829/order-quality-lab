@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest @AutoConfigureMockMvc
+@SpringBootTest(properties = "spring.datasource.hikari.maximum-pool-size=1") @AutoConfigureMockMvc
 class OrderApiIT {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper mapper;
