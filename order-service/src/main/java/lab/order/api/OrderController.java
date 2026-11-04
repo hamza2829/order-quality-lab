@@ -43,8 +43,12 @@ public class OrderController {
     public ResponseEntity<View> place(@Valid @RequestBody Request request) {
         Order order = service.place(request.lines().stream().map(line -> new OrderLine(new Sku(line.sku()),
                 new Quantity(line.quantity()), new Money(line.unitPrice(), line.currency()))).toList());
-        int status = order.status() == Order.Status.PLACED ? 201 : "INSUFFICIENT_STOCK".equals(order.reason()) ? 409 : 503;
-        return ResponseEntity.status(status).location(URI.create("/api/orders/" + order.id())).body(View.of(order));
+        return ResponseEntity.status(httpStatus(order)).location(URI.create("/api/orders/" + order.id())).body(View.of(order));
+    }
+    private static int httpStatus(Order order) {
+        if (order.status() == Order.Status.PLACED) return 201;
+        if ("INSUFFICIENT_STOCK".equals(order.reason())) return 409;
+        return 503;
     }
     @Operation(summary = "Read a placed or rejected order", description = "404 if the order does not exist.")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Saved order"), @ApiResponse(responseCode = "404", description = "Unknown order")})
