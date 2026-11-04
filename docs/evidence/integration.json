@@ -1,0 +1,56 @@
+{
+  "sha": "73ce0b33516318ba066088e9efc98f5f7aecade2",
+  "run_url": "https://github.com/hamza2829/order-quality-lab/actions/runs/41856024780",
+  "counts": {
+    "unit": {
+      "tests": 61,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "integration": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "contract": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "e2e": {
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "coverage": [
+    {
+      "package": "lab/inventory/application",
+      "covered": 21,
+      "missed": 0,
+      "percent": 100.0
+    },
+    {
+      "package": "lab/inventory/domain",
+      "covered": 25,
+      "missed": 0,
+      "percent": 100.0
+    },
+    {
+      "package": "lab/order/application",
+      "covered": 17,
+      "missed": 0,
+      "percent": 100.0
+    },
+    {
+      "package": "lab/order/domain",
+      "covered": 41,
+      "missed": 0,
+      "percent": 100.0
+    }
+  ]
+}

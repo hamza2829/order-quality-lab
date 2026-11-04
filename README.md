@@ -41,7 +41,23 @@ Example order body: `{"lines":[{"sku":"BOOK","quantity":2,"unitPrice":12.50,"cur
 ## Verified tests
 
 <!-- TEST_RESULTS_START -->
-CI evidence will be inserted after the workflows complete. No test counts are claimed before execution.
+Executed against [73ce0b335163](https://github.com/hamza2829/order-quality-lab/commit/73ce0b33516318ba066088e9efc98f5f7aecade2). Parameterized invocations count as separate tests. Unit tests are counted once, even though integration CI also reruns them.
+
+| Test type | Executed | Failures | Skipped | CI evidence |
+|---|---:|---:|---:|---|
+| Unit | 61 | 0 | 0 | [Run](https://github.com/hamza2829/order-quality-lab/actions/runs/41856024054) |
+| Integration | 20 | 0 | 0 | [Run](https://github.com/hamza2829/order-quality-lab/actions/runs/41856024780) |
+| Contract | 7 | 0 | 0 | [Run](https://github.com/hamza2829/order-quality-lab/actions/runs/41856024780) |
+| End to end | 5 | 0 | 0 | [Run](https://github.com/hamza2829/order-quality-lab/actions/runs/41856024495) |
+
+Unit-only JaCoCo coverage, with an 80 percent minimum per package:
+
+| Package | Covered lines | Total lines | Line coverage |
+|---|---:|---:|---:|
+| `lab.inventory.application` | 21 | 21 | 100.00% |
+| `lab.inventory.domain` | 25 | 25 | 100.00% |
+| `lab.order.application` | 17 | 17 | 100.00% |
+| `lab.order.domain` | 41 | 41 | 100.00% |
 <!-- TEST_RESULTS_END -->
 
 JUnit 5 and Mockito test domain rules and application ports. SpringBootTest and MockMvc exercise real H2 adapters. WireMock checks request shape, confirmation shape, rejection, retry, timeout and malformed responses. REST Assured exercises both real services under Docker Compose, including accepted, rejected and multi-line flows. JaCoCo enforces at least 80 percent line coverage separately for each domain and application package in each service. Unit-only CI enforces the same rule without relying on integration coverage. Reports are uploaded even when a job fails.
@@ -49,14 +65,22 @@ JUnit 5 and Mockito test domain rules and application ports. SpringBootTest and 
 ## Measured performance
 
 <!-- PERF_RESULTS_START -->
-CI measurements will be inserted after performance execution. No performance values are claimed before measurement.
+Measured in [performance CI](https://github.com/hamza2829/order-quality-lab/actions/runs/41856024222) on commit `73ce0b335163`.
+
+| Tool | Order POST requests/s | Order POST p95 ms | Order POST error rate | Orders |
+|---|---:|---:|---:|---:|
+| k6 baseline | 62.43 | 10.65 | 0.000% | 3127 |
+| k6 validation | 64.02 | 6.60 | 0.000% | 3206 |
+| JMeter | 138.67 | 6.00 | 0.000% | 6924 |
+
+Baseline p95 was 10.65 ms. The derived k6 validation budget was 50 ms. JMeter's overall sample error rate, including reads, was 0.000%.
 <!-- PERF_RESULTS_END -->
 
 See [performance methodology and results](docs/performance.md). The performance workflow uploads raw k6 summary exports, a k6 HTML report, JMeter CSV results, a JMeter HTML dashboard, calibration, runner details and service logs. k6 uses the `grafana/k6` Docker image. JMeter runs headless on the runner after its Apache archive checksum is verified.
 
 ## Refactoring and upgrade example
 
-The initial implementation uses springdoc 2.9.0. A separate small commit will move it to 2.9.1 after the initial checks. This is an example of a focused dependency upgrade with unchanged behavior. Its exact commit and verified checks will be recorded after execution. Production refactoring should preserve the aggregate invariants and the reservation contract under these tests.
+The initial implementation used springdoc 2.9.0. [A separate small commit](https://github.com/hamza2829/order-quality-lab/commit/b7cbd271bc931cdcd4f53234e52c57b91fc5f321) upgraded it to 2.9.1 after the baseline workflows passed. The workflows linked above passed after the upgrade. The upgrade and a small behavior-preserving refactoring are documented in [the upgrade example](docs/upgrade.md). Production refactoring should preserve the aggregate invariants and the reservation contract under these tests.
 
 ## Limitations
 

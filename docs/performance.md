@@ -1,6 +1,16 @@
 # Performance
 
-No numbers are claimed before a successful CI measurement. This page will be populated from the uploaded raw results and linked to the exact run and tested commit.
+<!-- MEASUREMENTS_START -->
+Measured in [performance CI](https://github.com/hamza2829/order-quality-lab/actions/runs/41856024222) on commit `73ce0b335163`.
+
+| Tool | Order POST requests/s | Order POST p95 ms | Order POST error rate | Orders |
+|---|---:|---:|---:|---:|
+| k6 baseline | 62.43 | 10.65 | 0.000% | 3127 |
+| k6 validation | 64.02 | 6.60 | 0.000% | 3206 |
+| JMeter | 138.67 | 6.00 | 0.000% | 6924 |
+
+Baseline p95 was 10.65 ms. The derived k6 validation budget was 50 ms. JMeter's overall sample error rate, including reads, was 0.000%.
+<!-- MEASUREMENTS_END -->
 
 The flow is one POST to place an order, one GET to read it and 100 ms of pacing. Each order contains one unit of the same synthetic product priced at EUR 12.50. Stock is reset to one billion units before each tool. A rejected-order probe runs outside the k6 samples. End to end functional tests cover rejected and multi-line orders.
 

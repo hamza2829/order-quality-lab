@@ -1,0 +1,36 @@
+{
+  "sha": "73ce0b33516318ba066088e9efc98f5f7aecade2",
+  "run_url": "https://github.com/hamza2829/order-quality-lab/actions/runs/41856024222",
+  "calibration": {
+    "baseline_p95_ms": 10.645381399999994,
+    "budget_ms": 50,
+    "rule": "max(50, ceil(2 * baseline_p95_ms / 10) * 10)"
+  },
+  "measurements": [
+    {
+      "tool": "k6 baseline",
+      "orders": 3127,
+      "requests_per_second": 62.42894567045281,
+      "p95_ms": 10.645381399999994,
+      "error_rate_percent": 0,
+      "checks_percent": 100
+    },
+    {
+      "tool": "k6 validation",
+      "orders": 3206,
+      "requests_per_second": 64.02353800811876,
+      "p95_ms": 6.595911500000001,
+      "error_rate_percent": 0,
+      "checks_percent": 100
+    },
+    {
+      "tool": "JMeter",
+      "orders": 6924,
+      "requests_per_second": 138.67414380132186,
+      "p95_ms": 6,
+      "error_rate_percent": 0.0,
+      "all_samples": 13832,
+      "all_sample_error_rate_percent": 0.0
+    }
+  ]
+}
