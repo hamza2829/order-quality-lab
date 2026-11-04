@@ -1,6 +1,8 @@
 package lab.inventory.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lab.inventory.application.InventoryService;
@@ -32,6 +34,9 @@ public class InventoryController {
         StockItem item = service.stock(new Sku(sku)); return new StockView(item.sku().value(), item.available());
     }
     @Operation(summary = "Reserve all lines atomically", description = "201 on success or exact replay. 409 if stock is insufficient or a reservation ID is reused for different lines. 400 for invalid input.")
+    @ApiResponses({@ApiResponse(responseCode = "201", description = "Reservation confirmed, including an exact replay"),
+            @ApiResponse(responseCode = "400", description = "Invalid reservation"),
+            @ApiResponse(responseCode = "409", description = "Insufficient stock or conflicting reservation ID")})
     @PostMapping("/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationView reserve(@Valid @RequestBody ReservationRequest request) {

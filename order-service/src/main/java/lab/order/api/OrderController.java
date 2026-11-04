@@ -1,6 +1,8 @@
 package lab.order.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lab.order.application.PlaceOrderService;
@@ -33,6 +35,10 @@ public class OrderController {
         }
     }
     @Operation(summary = "Place an order", description = "201 when stock is reserved. 409 for insufficient stock. 503 after inventory timeout or server failure with one retry. Rejected orders are saved and include an ID and error code. POST itself is not idempotent.")
+    @ApiResponses({@ApiResponse(responseCode = "201", description = "Order placed and stock reserved"),
+            @ApiResponse(responseCode = "400", description = "Invalid order"),
+            @ApiResponse(responseCode = "409", description = "Order rejected because stock is insufficient"),
+            @ApiResponse(responseCode = "503", description = "Reservation was not confirmed after two attempts")})
     @PostMapping
     public ResponseEntity<View> place(@Valid @RequestBody Request request) {
         Order order = service.place(request.lines().stream().map(line -> new OrderLine(new Sku(line.sku()),
@@ -41,6 +47,7 @@ public class OrderController {
         return ResponseEntity.status(status).location(URI.create("/api/orders/" + order.id())).body(View.of(order));
     }
     @Operation(summary = "Read a placed or rejected order", description = "404 if the order does not exist.")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Saved order"), @ApiResponse(responseCode = "404", description = "Unknown order")})
     @GetMapping("/{id}")
     public ResponseEntity<View> get(@PathVariable UUID id) {
         return service.find(id).map(View::of).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
